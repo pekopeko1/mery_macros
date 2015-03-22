@@ -12,50 +12,35 @@ function linemode(ary) {
         return "";
     case "0,0,1,0":
         return "";
-        break;
     case "0,0,1,1":
         return "─";
-        break;
     case "0,1,0,0":
         return "";
-        break;
     case "0,1,0,1":
         return "┌";
-        break;
     case "0,1,1,0":
         return "┐";
-        break;
     case "0,1,1,1":
         return "┬";
-        break;
     case "1,0,0,0":
         return "";
-        break;
     case "1,0,0,1":
         return "└";
-        break;
     case "1,0,1,0":
         return "┘";
-        break;
     case "1,0,1,1":
         return "┴";
-        break;
     case "1,1,0,0":
         return "│";
-        break;
     case "1,1,0,1":
         return "├";
-        break;
     case "1,1,1,0":
         return "┤";
-        break;
     case "1,1,1,1":
         return "┼";
-        break;
     default:
 	alert("Error NG");
 	return;
-        break;
     }
 }
 
@@ -98,7 +83,6 @@ function DrawLine(direct){
     default:
 	alert("Error NG");
 	return;
-        break;
     }
     if (ln == "") {
     ln = defchar;
@@ -106,29 +90,16 @@ function DrawLine(direct){
     InsertText(ln);
     switch (direct) {
     case "Bottom":
-          if ( MoveBottom() == false) {
-          return;
-          }
-          break;
+          if ( MoveBottom() == false) return;
     case "Top":
-          if ( MoveTop() == false) {
-          return;
-          }
-          break;
+          if ( MoveTop() == false) return;
     case "Left":
-          if ( MoveLeft() == false) {
-          return;
-          }
-          break;
+          if ( MoveLeft() == false) return;
     case "Right":
-          if ( MoveRight() == false) {
-          return;
-          }
-          break;
+          if ( MoveRight() == false) return;
     default:
 	alert("Error NG");
 	return;
-        break;
     }
     InsertText(linemode([IsStrMatch(GetTop(), top_joint), IsStrMatch(GetBottom(), bottom_joint), IsStrMatch(GetLeft(), left_joint), IsStrMatch(GetRight(), right_joint)]));
 
@@ -139,9 +110,7 @@ function GetCur() {
     var now_view_x = document.selection.GetActivePointX(mePosView);
     var now_view_y = document.selection.GetActivePointY(mePosView);
     var line_str = GetLineStr(now_view_y);
-    if ((now_view_x - 1) >= ByteLen(line_str)) {
-	return;
-    }
+    if ((now_view_x - 1) >= ByteLen(line_str)) return;
     return line_str.charAt(now_view_x - 1);
 }
 
@@ -160,21 +129,16 @@ function GetTopOrBottom(direct) {
     var dst_str;
     switch (direct) {
 	case "Top":
-	    if (now_view_y == 1) {
-		return ret;
-	    }
+	    if (now_view_y == 1) return ret;
 	    dst_str = GetLineStr(now_view_y - 1);
 	    break;
 	case "Bottom":
-	    if (IsFinalLine(now_view_y)) {
-		return ret;
-	    }
+	    if (IsFinalLine(now_view_y)) return ret;
 	    dst_str = GetLineStr(now_view_y + 1);
 	    break;
 	default:
 	    alert("Error NG");
 	    return;
-	    break;
     }
     var src_str = GetLeftsideStr();
     var src_blen = ByteLen(src_str);
@@ -182,18 +146,14 @@ function GetTopOrBottom(direct) {
     var dst_len = dst_str.length;
     var dst_blen = ByteLen(dst_str);
 
-    if (dst_blen < src_blen) {
-	return ret;
-    }
+    if (dst_blen < src_blen) return ret;
     return ByteMid(dst_str, src_blen, 1);
 }
 
 function GetLeft() {
     var ret = "";
     var now_view_x = document.selection.GetActivePointX(mePosView);
-    if (now_view_x < 2) {
-        return ret;
-    }
+    if (now_view_x < 2) return ret;
     var now_view_y = document.selection.GetActivePointY(mePosView);
     var line_str = GetLineStr(now_view_y);
 
@@ -206,64 +166,53 @@ function GetRight() {
     var now_view_y = document.selection.GetActivePointY(mePosView);
     var line_str = GetLineStr(now_view_y);
 
-    if (now_view_x  >= line_str.length) {
-        return ret;
-    }
+    if (now_view_x  >= line_str.length) return ret;
     return line_str.charAt(now_view_x)
 }
-//
+
 //' いずれかにマッチしていれば 1, 非マッチなら 0 を返す
-//Function IsStrMatch(s, arr)
-//    IsStrMatch = 0
-//    
-//    If Not IsArray(arr) Then Exit Function
-//    
-//    Dim ar
-//    For Each ar In arr
-//        If s = ar Then
-//            IsStrMatch = 1
-//            Exit Function
-//        End If
-//    Next
-//End Function
-//
-//Sub InsertText(ByVal c)
-//    If c = "" Then Exit Sub
-//    
-//    Dim ismulti
-//    ismulti = False
-//    
-//    Dim isrep
-//    If IsStrMatch(GetCur, Array(" ", "─", "│", "┼", "┌", "┐", "┘", "└", "//├", "┬", "┤", "┴", "━", "┃", "╋", "┏", "┓", "┛", "┗", "┣", "┳", "//┫", "┻")) = 1 Then
-//        isrep = True
-//    Else
-//        isrep = False
-//    End If
-//    
-//    If isrep Then
-//        BeginSelect
-//        MoveRight
-//    End If
-//    Call InsText(CStr(c))
-//    MoveLeft
-//End Sub
+function IsStrMatch(str, arry) {
+    //if ((arry instanceof Array) == false) {
+    if (!Array.IsArray(arry)) return 0;
+
+    for (var i = 0; i < arry.length; i++) {
+        if (str == arry[i]) return 1;
+    }
+}
+
+function InsertText(c) {
+    if (c == "") return;
+    var arry = [" ", "─", "│", "┼", "┌", "┐", "┘", "└", "├", "┬", "┤", "┴", "━", "┃", "╋", "┏", "┓", "┛", "┗", "┣", "┳", "┫", "┻"];
+    var ismulti = false;
+    var isrep;
+    if (IsStrMatch(GetCur, arry) == 1) {
+        isrep = true;
+    } else {
+        isrep = false;
+    }
+    if (isrep) {
+        BeginSelect();
+        MoveRight();
+    }
+    InsText(c);
+    MoveLeft();
+}
+
+function MoveTop() {
+    var now_view_x = document.selection.GetActivePointX(mePosView);
+    var now_view_y = document.selection.GetActivePointY(mePosView);
+    if (now_view_y == 1) return false;
+    var str_to_char = GetLeftsideStr(now_view_x);
+    var byte_len_cur = ByteLen(str_to_char);
+    var char_byte = 2;
+    var sp = 0;
+    var dst_str = GetLineStr(now_view_y - 1);
+    if (ByteLen(dst_str) < byte_len_cur) sp = byte_len_cur - ByteLen(dst_str) - char_byte;
+    Editor UP//must henko
+    var ret = true;
+}
 //
 //Function MoveTop()
-//    MoveTop = False
-//    
-//    Dim x, y
-//    x = CLng(ExpandParameter("$x"))
-//    y = CLng(ExpandParameter("$y"))
-//    
-//    If y = 1 Then Exit Function
-//    
-//    Dim strToCur
-//    strToCur = Mid(GetLineStr(CLng(y)), 1, x)
-//    Dim byteLenCur
-//    byteLenCur = ByteLen(strToCur)
-//    Dim charByte
-//    charByte = 2
-//
 //    Dim sp, s
 //    sp = 0
 //    s = GetLineStr(CLng(y - 1))
